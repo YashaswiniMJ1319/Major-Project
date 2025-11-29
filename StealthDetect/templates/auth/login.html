@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block title %}Login - StealthCAPTCHA{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center mb-3">
+        <div class="col-md-6 col-lg-4">
+            <div class="card bg-light shadow-sm">
+                <div class="tracking-status p-3 my-3 border rounded-3 text-center bg-light">
+                    <small class="text-muted d-block mb-2">Live Behavioral Metrics (Client-Side)</small>
+                        <div class="row g-2 small">
+                            <div class="col-6">
+                                <span class="fw-bold" id="auth-mouse-events">0</span> Mouse Movements
+                            </div>
+                            <div class="col-6">
+                                <span class="fw-bold" id="auth-click-events">0</span> Clicks
+                            </div>
+                            <div class="col-6">
+                                <span class="fw-bold" id="auth-keyboard-events">0</span> Keystrokes
+                            </div>
+                            <div class="col-6">
+                                <span class="fw-bold" id="auth-scroll-events">0</span> Scrolls
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4><i class="fas fa-sign-in-alt me-2"></i>Login</h4>
+                </div>
+                <div class="card-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="loginMessage" class="mt-3"></div>
+                    
+                    <div class="text-center mt-3">
+                        <small>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+
+<style>
+/* 🌤️ Light Theme Consistent with Index Page */
+body {
+  background: linear-gradient(to bottom right, #f0f4f8, #e9f0ff);
+  font-family: 'Poppins', sans-serif;
+  color: #002855;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* 🧊 Card Container */
+.card {
+  background: #ffffff;
+  border: 1px solid #d6e0f0;
+  border-radius: 1rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  color: #002855;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* 🩵 Card Headers */
+.card-header {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+  border-radius: 1rem 1rem 0 0;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+/* 🧠 Input fields */
+.form-control {
+  background-color: #f8faff;
+  border: 1px solid #cbd6e2;
+  border-radius: 0.5rem;
+  padding: 10px;
+  color: #002855;
+}
+
+.form-control:focus {
+  background-color: #ffffff;
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  color: #002855;
+}
+
+/* 🧾 Labels */
+.form-label {
+  color: #002855;
+  font-weight: 500;
+}
+
+/* 🎯 Buttons */
+.btn {
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.btn-primary, .btn-success {
+  background: #007bff;
+  border: none;
+  color: #fff;
+}
+
+.btn-primary:hover, .btn-success:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+}
+
+/* 🎛 Metrics Box */
+.tracking-status {
+  background: #ffffff;
+  border: 1px solid #d6e0f0;
+  border-radius: 1rem;
+  color: #002855 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tracking-status small.text-muted {
+  color: #007bff !important;
+  font-weight: 600;
+}
+
+.tracking-status .fw-bold {
+  color: #002855;
+  font-weight: 600;
+}
+
+.tracking-status:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15);
+}
+
+/* 🔗 Links */
+a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* 🌫 Smooth fade-in appearance */
+.container {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+
+<script>
+// ======================================================================
+// 1) LIVE METRICS — MATCH TASKS PAGE BEHAVIOR (local counters + listeners)
+// ======================================================================
+
+// Local cumulative counters (no reset)
+let mouseEvents = 0;
+let clickEvents = 0;
+let keystrokeEvents = 0;
+let scrollEvents = 0;
+
+// Update DOM like tasks page
+function updateCounters() {
+    document.getElementById('auth-mouse-events').textContent = mouseEvents;
+    document.getElementById('auth-click-events').textContent = clickEvents;
+    document.getElementById('auth-keyboard-events').textContent = keystrokeEvents;
+    document.getElementById('auth-scroll-events').textContent = scrollEvents;
+}
+
+// Attach identical listeners as tasks_interface.html
+function setupEventTrackingForAuthPages() {
+    document.addEventListener('mousemove', () => {
+        mouseEvents++;
+        updateCounters();
+    });
+
+    document.addEventListener('click', () => {
+        clickEvents++;
+        updateCounters();
+    });
+
+    document.addEventListener('keydown', () => {
+        keystrokeEvents++;
+        updateCounters();
+    });
+
+    document.addEventListener('scroll', () => {
+        scrollEvents++;
+        updateCounters();
+    });
+}
+
+// ======================================================================
+// 2) FORM SUBMISSION LOGIC (UNCHANGED)
+// ======================================================================
+
+let authUpdateInterval; // kept only to preserve your structure; not used now
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Start live metrics exactly like tasks: event listeners + immediate DOM updates
+    setupEventTrackingForAuthPages();
+
+    // --- Login/Registration Form Submission Logic (unchanged) ---
+    const formId = window.location.pathname.includes('/register') ? 'registerForm' : 'loginForm';
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        const messageDiv = document.getElementById(formId.replace('Form', 'Message'));
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) data[key] = value;
+
+        // Keep using your tracker for payload (unchanged)
+        const behavioralData = window.behavioralTracker.getData();
+        const isRegistration = formId === 'registerForm';
+
+        const finalPayload = {
+            ...data,
+            ...behavioralData,
+            page_url: window.location.pathname,
+            action_type: isRegistration ? 'registration_attempt' : 'login_attempt',
+            user_agent: navigator.userAgent,
+            screen_resolution: `${screen.width}x${screen.height}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            language: navigator.language,
+            platform: navigator.platform
+        };
+        
+        let isBot = false;
+
+        if (!isRegistration) {
+            try {
+                messageDiv.innerHTML = '<div class="alert alert-info">Running behavioral analysis...</div>';
+                const detectRes = await fetch('/api/detect_bot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(finalPayload) 
+                });
+                const detectResult = await detectRes.json();
+                
+                if (detectResult.prediction === 'bot') {
+                    isBot = true;
+                    messageDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-robot me-2"></i>
+                            <strong>LOGIN BLOCKED:</strong> User detected as a <b>bot</b>. 
+                            <small>(Confidence: ${(detectResult.confidence * 100).toFixed(1)}%)</small>
+                        </div>`;
+                    alert('Access Denied: User detected as bot.');
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-user-check me-2"></i>
+                            <strong>Detection check passed!</strong> Classified as <b>human</b>.
+                            <small>(Confidence: ${(detectResult.confidence * 100).toFixed(1)}%)</small>
+                        </div>`;
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            } catch (err) {
+                console.error('Client-side detection failed:', err);
+                messageDiv.innerHTML = '<div class="alert alert-warning">Behavioral check failed (Error). Proceeding with standard process.</div>';
+            }
+        }
+        
+        if (isBot && !isRegistration) {
+            submitButton.innerHTML = originalButtonText;
+            return; 
+        }
+
+        try {
+            messageDiv.innerHTML = isRegistration ? 
+                '<div class="alert alert-info">Attempting registration (Server analysis in progress)...</div>' : 
+                '<div class="alert alert-info">Attempting standard login...</div>';
+                
+            const url = isRegistration ? '{{ url_for("register") }}' : '{{ url_for("login") }}';
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(finalPayload)
+            });
+            
+            const result = await response.json();
+            
+            if (response.status === 403 && result.prediction === 'bot') {
+                 messageDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-robot me-2"></i>
+                        <strong>REGISTRATION BLOCKED:</strong> Bot behavior detected by server.
+                        <small>(Confidence: ${(result.confidence * 100).toFixed(1)}%)</small>
+                    </div>`;
+                submitButton.disabled = true;
+                submitButton.innerHTML = originalButtonText;
+                return;
+            }
+
+            if (result.success) {
+                if (!isRegistration) {
+                    messageDiv.innerHTML = '<div class="alert alert-success">Login successful! Redirecting...</div>';
+                    setTimeout(() => {
+                        window.location.href = result.redirect;
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = '<div class="alert alert-success">Registration successful! <a href="{{ url_for("login") }}">Please login</a></div>';
+                    form.reset();
+                }
+            } else {
+                messageDiv.innerHTML = `<div class="alert alert-danger">${result.error}</div>`;
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonText;
+            }
+        } catch (error) {
+            console.error('Final Submission Failed:', error);
+            messageDiv.innerHTML = `<div class="alert alert-danger">${isRegistration ? 'Registration' : 'Login'} failed. Please try again.</div>`;
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        }
+    });
+
+    window.addEventListener('beforeunload', function() {
+        // no interval to clear now; kept for symmetry
+    });
+});
+</script>
+{% endblock %}

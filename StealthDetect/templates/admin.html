@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block title %}Research Analytics - Behavioral Biometrics{% endblock %}
+
+{% block content %}
+<!-- Analytics Header -->
+<section class="py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-chart-bar me-3"></i>
+                    Research Analytics Dashboard
+                </h1>
+                <p class="lead">
+                    Comprehensive analysis of behavioral biometric data and model performance
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Overview -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card bg-primary text-white">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{{ stats.total_detections }}</h3>
+                        <p>Total Samples</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card bg-success text-white">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{{ stats.human_detections }}</h3>
+                        <p>Human Classified</p>
+                        <small>{{ "%.1f"|format(stats.human_percentage) }}%</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card bg-danger text-white">
+                    <div class="stat-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{{ stats.bot_detections }}</h3>
+                        <p>Bot Classified</p>
+                        <small>{{ "%.1f"|format(stats.bot_percentage) }}%</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card bg-info text-white">
+                    <div class="stat-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>{% if model_metrics %}{{ "%.3f"|format(model_metrics.accuracy) }}{% else %}N/A{% endif %}</h3>
+                        <p>Model Accuracy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Model Performance -->
+{% if model_metrics %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class="mb-4">Machine Learning Model Performance</h2>
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="performance-card">
+                            <h5>Classification Metrics</h5>
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <div class="metric-item">
+                                        <h4 class="text-primary">{{ "%.3f"|format(model_metrics.precision) }}</h4>
+                                        <p>Precision</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="metric-item">
+                                        <h4 class="text-success">{{ "%.3f"|format(model_metrics.recall) }}</h4>
+                                        <p>Recall</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="metric-item">
+                                        <h4 class="text-warning">{{ "%.3f"|format(model_metrics.f1_score) }}</h4>
+                                        <p>F1-Score</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="metric-item">
+                                        <h4 class="text-info">{{ "%.3f"|format(model_metrics.accuracy) }}</h4>
+                                        <p>Accuracy</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="training-info">
+                            <h5>Training Information</h5>
+                            <ul class="list-unstyled">
+                                <li><strong>Total Samples:</strong> {{ model_metrics.training_samples }}</li>
+                                <li><strong>Human Samples:</strong> {{ model_metrics.human_samples }}</li>
+                                <li><strong>Bot Samples:</strong> {{ model_metrics.bot_samples }}</li>
+                                <li><strong>Model Version:</strong> {{ model_metrics.model_version }}</li>
+                                <li><strong>Training Date:</strong> {{ model_metrics.timestamp.strftime('%Y-%m-%d %H:%M') }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Recent Classifications -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class="mb-4">Recent Behavioral Classifications</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Session ID</th>
+                                <th>Classification</th>
+                                <th>Confidence</th>
+                                <th>Processing Time</th>
+                                <th>Action Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detection in recent_detections %}
+                            <tr>
+                                <td>{{ detection.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td class="font-monospace">{{ detection.session_id[:12] }}...</td>
+                                <td>
+                                    {% if detection.prediction == 'human' %}
+                                        <span class="badge bg-success">Human</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Bot</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ "%.2f"|format(detection.confidence * 100) }}%</td>
+                                <td>{{ detection.processing_time_ms }}ms</td>
+                                <td>{{ detection.action_type }}</td>
+                            </tr>
+                            {% endfor %}
+
+                            {% if not recent_detections %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    No behavioral data available. Visit the 
+                                    <a href="{{ url_for('research') }}">research interface</a> 
+                                    to generate sample data.
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Data Visualization -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="mb-4">Behavioral Data Analysis</h2>
+                <div class="chart-container bg-white p-4 rounded">
+                    <canvas id="hourlyChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Load hourly detection data for visualization
+fetch('/api/stats')
+    .then(response => response.json())
+    .then(data => {
+        const ctx = document.getElementById('hourlyChart').getContext('2d');
+
+        // Prepare data for chart
+        const hours = Object.keys(data.hourly_data || {}).sort((a, b) => parseInt(a) - parseInt(b));
+        const humanData = hours.map(hour => (data.hourly_data[hour] || {}).human || 0);
+        const botData = hours.map(hour => (data.hourly_data[hour] || {}).bot || 0);
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: hours.map(h => h + ':00'),
+                datasets: [
+                    {
+                        label: 'Human Classifications',
+                        data: humanData,
+                        backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Bot Classifications',
+                        data: botData,
+                        backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Hourly Behavioral Classifications'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Classifications'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Hour of Day'
+                        }
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => {
+        console.error('Error loading chart data:', error);
+        document.getElementById('hourlyChart').innerHTML = 
+            '<p class="text-center text-muted">Chart data unavailable</p>';
+    });
+</script>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+.stat-card {
+    padding: 1.5rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    margin-right: 1rem;
+}
+
+.stat-content h3 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.stat-content p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.performance-card, .training-info {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.metric-item h4 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.chart-container {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

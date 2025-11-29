@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+{% block title %}Register - StealthCAPTCHA{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center mb-3">
+    <div class="col-md-6 col-lg-4">
+      <div class="card bg-light shadow-sm">
+        <div class="tracking-status p-3 my-3 border rounded-3 text-center bg-light">
+          <small class="text-muted d-block mb-2">Live Behavioral Metrics (Client-Side)</small>
+          <div class="row g-2 small">
+            <div class="col-6"><span class="fw-bold" id="auth-mouse-events">0</span> Mouse Movements</div>
+            <div class="col-6"><span class="fw-bold" id="auth-click-events">0</span> Clicks</div>
+            <div class="col-6"><span class="fw-bold" id="auth-keyboard-events">0</span> Keystrokes</div>
+            <div class="col-6"><span class="fw-bold" id="auth-scroll-events">0</span> Scrolls</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow">
+        <div class="card-header bg-success text-white text-center">
+          <h4><i class="fas fa-user-plus me-2"></i>Register</h4>
+        </div>
+        <div class="card-body">
+          <form id="registerForm" autocomplete="on" method="POST" action="{{ url_for('register') }}">
+            <div class="mb-3">
+              <label for="username" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="username" name="username" autocomplete="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" autocomplete="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" autocomplete="new-password" required>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-success">
+                <i class="fas fa-user-plus me-1"></i>Register
+              </button>
+            </div>
+          </form>
+
+          <div id="registerMessage" class="mt-3"></div>
+
+          <div class="text-center mt-3">
+            <small>Already have an account? <a href="{{ url_for('login') }}">Login here</a></small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+
+<style>
+/* 🌤 Light Theme Consistent with Index Page */
+body {
+  background: linear-gradient(to bottom right, #f0f4f8, #e9f0ff);
+  font-family: 'Poppins', sans-serif;
+  color: #002855;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* 🧊 Card Container */
+.card {
+  background: #ffffff;
+  border: 1px solid #d6e0f0;
+  border-radius: 1rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  color: #002855;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* 🩵 Card Headers */
+.card-header {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+  border-radius: 1rem 1rem 0 0;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+/* 🧠 Input fields */
+.form-control {
+  background-color: #f8faff;
+  border: 1px solid #cbd6e2;
+  border-radius: 0.5rem;
+  padding: 10px;
+  color: #002855;
+}
+
+.form-control:focus {
+  background-color: #ffffff;
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  color: #002855;
+}
+
+/* 🧾 Labels */
+.form-label {
+  color: #002855;
+  font-weight: 500;
+}
+
+/* 🎯 Buttons */
+.btn {
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.btn-primary, .btn-success {
+  background: #007bff;
+  border: none;
+  color: #fff;
+}
+
+.btn-primary:hover, .btn-success:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.4);
+}
+
+/* 🎛 Metrics Box */
+.tracking-status {
+  background: #ffffff;
+  border: 1px solid #d6e0f0;
+  border-radius: 1rem;
+  color: #002855 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tracking-status small.text-muted {
+  color: #007bff !important;
+  font-weight: 600;
+}
+
+.tracking-status .fw-bold {
+  color: #002855;
+  font-weight: 600;
+}
+
+.tracking-status:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15);
+}
+
+/* 🔗 Links */
+a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* 🌫 Smooth fade-in appearance */
+.container {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+/* ======================================================================
+   ✅ Universal Autofill Detection & Keystroke Suppression (Chrome-Safe)
+   ====================================================================== */
+let mouseEvents = 0, clickEvents = 0, keystrokeEvents = 0, scrollEvents = 0;
+let autofillDetected = false;
+let autofillLock = false;
+
+function updateCounters() {
+  document.getElementById("auth-mouse-events").textContent = mouseEvents;
+  document.getElementById("auth-click-events").textContent = clickEvents;
+  document.getElementById("auth-keyboard-events").textContent = keystrokeEvents;
+  document.getElementById("auth-scroll-events").textContent = scrollEvents;
+}
+
+function setupEventTrackingForAuthPages() {
+  document.addEventListener("mousemove", () => { mouseEvents++; updateCounters(); });
+  document.addEventListener("click", () => { clickEvents++; updateCounters(); });
+  document.addEventListener("scroll", () => { scrollEvents++; updateCounters(); });
+
+  document.addEventListener("keydown", (e) => {
+    // Only count keystrokes if not autofilling
+    if (!autofillLock && !autofillDetected && e.isTrusted && !e.repeat) {
+      keystrokeEvents++;
+      updateCounters();
+    }
+  });
+}
+
+/* ======================================================================
+   🧠 Cross-Version Autofill Detector
+   ====================================================================== */
+function setupAutofillDetection() {
+  const inputs = document.querySelectorAll("input");
+
+  // CSS-based autofill trigger (Chrome, Edge, Brave)
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes autofill-start { from {} to {} }
+    input:-webkit-autofill { animation-name: autofill-start; }
+  `;
+  document.head.appendChild(style);
+
+  document.addEventListener("animationstart", (e) => {
+    if (e.animationName === "autofill-start") {
+      console.log("⚠️ Autofill detected — disabling keystroke tracking temporarily");
+      autofillDetected = true;
+      autofillLock = true;
+      keystrokeEvents = 0; // reset any fake key count
+      updateCounters();
+      setTimeout(() => {
+        autofillDetected = false;
+        autofillLock = false;
+        console.log("✅ Autofill finished — re-enabling keystroke tracking");
+      }, 2000);
+    }
+  });
+
+  // Value-change detector (for Chrome 142+)
+  inputs.forEach(input => {
+    let lastVal = input.value;
+    const observer = new MutationObserver(() => {
+      if (document.activeElement !== input && input.value !== lastVal) {
+        autofillDetected = true;
+        autofillLock = true;
+        keystrokeEvents = 0;
+        updateCounters();
+        console.log("⚠️ Autofill value change detected");
+        setTimeout(() => {
+          autofillDetected = false;
+          autofillLock = false;
+        }, 2000);
+      }
+      lastVal = input.value;
+    });
+    observer.observe(input, { attributes: true, attributeFilter: ['value'] });
+  });
+}
+
+/* ======================================================================
+   🧾 Form Submission with Behavior Metrics
+   ====================================================================== */
+document.addEventListener("DOMContentLoaded", function() {
+  setupEventTrackingForAuthPages();
+  setupAutofillDetection();
+
+  const form = document.getElementById("registerForm");
+  const messageDiv = document.getElementById("registerMessage");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const submitButton = form.querySelector("button[type='submit']");
+    const originalText = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+
+    const formData = Object.fromEntries(new FormData(form).entries());
+    const finalPayload = {
+      ...formData,
+      behavioral_metrics: {
+        mouseEvents,
+        clickEvents,
+        keystrokeEvents,
+        scrollEvents,
+        autofillUsed: autofillDetected
+      }
+    };
+
+    try {
+      const response = await fetch("{{ url_for('register') }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(finalPayload)
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        messageDiv.innerHTML = `<div class="alert alert-success">
+          Registration successful! <a href="{{ url_for('login') }}">Login here</a>
+        </div>`;
+        form.reset();
+      } else {
+        messageDiv.innerHTML = `<div class="alert alert-danger">${result.error}</div>`;
+      }
+    } catch (err) {
+      messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${err.message}</div>`;
+    }
+
+    submitButton.disabled = false;
+    submitButton.innerHTML = originalText;
+  });
+});
+</script>
+{% endblock %}
