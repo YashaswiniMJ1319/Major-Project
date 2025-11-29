@@ -15,8 +15,11 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
-    database_url = "mysql+pymysql://root:@localhost/stealth_captcha"
+# CHANGE 1: Use a local SQLite file instead of local MySQL
+    database_url = "sqlite:///local_development.db" 
 
+
+# ... rest of your code
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
