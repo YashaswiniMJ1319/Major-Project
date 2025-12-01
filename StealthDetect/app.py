@@ -4,7 +4,7 @@ import logging
 from flask import Flask
 from flask_login import LoginManager
 from werkzeug.middleware.proxy_fix import ProxyFix
-from extensions import db   # ✅ import db here
+from extensions import db   # import db here
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -13,13 +13,21 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "stealth-captcha-secret-key")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
+# ---------------- DATABASE LOGIC FOR RAILWAY DEPLOYMENT ----------------
 database_url = os.environ.get("DATABASE_URL")
+data_dir = os.environ.get("DATA_DIR")  # persistent storage path from Railway plugin (optional)
+
 if not database_url:
-# CHANGE 1: Use a local SQLite file instead of local MySQL
-    database_url = "sqlite:///local_development.db" 
+    if data_dir:
+        # Use Railway persistent volume if provided
+        db_path = os.path.join(data_dir, "stealth_captcha.db")
+        database_url = f"sqlite:///{db_path}"
+    else:
+        # Local fallback SQLite
+        os.makedirs(os.path.join(os.path.dirname(__file__), "instance"), exist_ok=True)
+        database_url = "sqlite:///instance/stealth_captcha.db"
+# ------------------------------------------------------------------------
 
-
-# ... rest of your code
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
@@ -42,3 +50,9 @@ with app.app_context():
     import models
     import routes
     db.create_all()
+
+# ------------ REQUIRED FOR PRODUCTION (RAILWAY / HEROKU / RENDER) ------------
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))  # Railway auto-assigns PORT
+    app.run(host="0.0.0.0", port=port)
+# -----------------------------------------------------------------------------
